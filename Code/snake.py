@@ -2,6 +2,7 @@ import pygame
 import random
 from enum import Enum
 from collections import namedtuple
+from variables import *
 
 pygame.init()
 font = pygame.font.SysFont('arial', 25)
@@ -13,16 +14,6 @@ class Direction(Enum):
     DOWN = 4
 
 Point = namedtuple('Point', 'x, y')
-
-TEXT_COLOR = (255, 255, 255)
-FRUIT_COLOR = (200,0,0)
-SNAKE_COLOR_1 = (34, 149, 21)
-SNAKE_COLOR_2 = (49, 220, 29)
-FOND_COLOR = (0,0,0)
-
-SHADOW_SIZE = 4  # 1 <= SHADOW_SIZE < BLOCK_SIZE
-BLOCK_SIZE = 20
-SPEED = 5
 
 class SnakeGame:
     
@@ -109,8 +100,8 @@ class SnakeGame:
         self.display.fill(FOND_COLOR)
 
         for pt in self.snake:
-            pygame.draw.rect(self.display, SNAKE_COLOR_1, pygame.Rect(pt.x, pt.y, BLOCK_SIZE, BLOCK_SIZE))
-            pygame.draw.rect(self.display, SNAKE_COLOR_2, pygame.Rect(pt.x+(SHADOW_SIZE/2), pt.y+(SHADOW_SIZE/2), BLOCK_SIZE - SHADOW_SIZE, BLOCK_SIZE - SHADOW_SIZE))
+            pygame.draw.rect(self.display, SNAKE_COLOR_SHADOW, pygame.Rect(pt.x, pt.y, BLOCK_SIZE, BLOCK_SIZE))
+            pygame.draw.rect(self.display, SNAKE_COLOR_BODY, pygame.Rect(pt.x+(SHADOW_SIZE/2), pt.y+(SHADOW_SIZE/2), BLOCK_SIZE - SHADOW_SIZE, BLOCK_SIZE - SHADOW_SIZE))
 
         pygame.draw.circle(self.display, FRUIT_COLOR, [self.food.x + DEMI_BLOCK_SIZE, self.food.y + DEMI_BLOCK_SIZE], DEMI_BLOCK_SIZE)
 
