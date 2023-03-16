@@ -4,6 +4,7 @@ from enum import Enum
 from collections import namedtuple
 from variables import *
 
+
 pygame.init()
 font = pygame.font.SysFont('arial', 25)
 
@@ -14,6 +15,7 @@ class Direction(Enum):
     DOWN = 4
 
 Point = namedtuple('Point', 'x, y')
+
 
 class SnakeGame:
     
@@ -37,6 +39,7 @@ class SnakeGame:
         self.food = None
         self._place_food()
         
+
     def _place_food(self):
         x = random.randint(0, (self.w-BLOCK_SIZE )//BLOCK_SIZE )*BLOCK_SIZE 
         y = random.randint(0, (self.h-BLOCK_SIZE )//BLOCK_SIZE )*BLOCK_SIZE
@@ -44,6 +47,7 @@ class SnakeGame:
         if self.food in self.snake:
             self._place_food()
         
+
     def play_step(self):
         # 1. On récupère les entrées de l'utilisateur
         for event in pygame.event.get():
@@ -84,6 +88,7 @@ class SnakeGame:
         # 6. On retourne l'état du jeu
         return game_over, self.score
     
+
     def _is_collision(self):
         # si on touche un mur
         if self.head.x > self.w - BLOCK_SIZE or self.head.x < 0 or self.head.y > self.h - BLOCK_SIZE or self.head.y < 0:
@@ -94,6 +99,7 @@ class SnakeGame:
         
         return False
         
+
     def _update_ui(self, record):
         DEMI_BLOCK_SIZE = int(BLOCK_SIZE/2)
         
@@ -115,6 +121,7 @@ class SnakeGame:
 
         pygame.display.flip()
         
+
     def _move(self, direction):
         x = self.head.x
         y = self.head.y
@@ -130,9 +137,13 @@ class SnakeGame:
         self.head = Point(x, y)
             
 
+
 if __name__ == '__main__':
 
-    record = 0
+    try:
+        record = [record for record in open("record.txt", "r")][0]
+    except:
+        record = 0
 
     while True:
         game = SnakeGame()
@@ -145,6 +156,8 @@ if __name__ == '__main__':
             
         if score > record:
             record = score
+            with open("record.txt", "w") as f:
+                f.write(str(record))
 
         print('Final Score', score)
         print('Record', record)
