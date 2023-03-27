@@ -1,21 +1,10 @@
 import pygame
 import random
-from enum import Enum
-from collections import namedtuple
 from variables import *
-
+import agent as agentIA
 
 pygame.init()
 font = pygame.font.SysFont('arial', 25)
-
-class Direction(Enum):
-    RIGHT = 1
-    LEFT = 2
-    UP = 3
-    DOWN = 4
-
-Point = namedtuple('Point', 'x, y')
-
 
 class SnakeGame:
     
@@ -26,18 +15,22 @@ class SnakeGame:
         self.display = pygame.display.set_mode((self.w, self.h))
         pygame.display.set_caption("Snake pas AI pour l'instant")
         self.clock = pygame.time.Clock()
-        
-        # init game state
+        self.reset()
+
+
+    def reset(self):
+        # reset game state
         self.direction = Direction.RIGHT
-        
+
         self.head = Point(self.w/2, self.h/2)
-        self.snake = [self.head, 
+        self.snake = [self.head,
                       Point(self.head.x-BLOCK_SIZE, self.head.y),
                       Point(self.head.x-(2*BLOCK_SIZE), self.head.y)]
-        
+
         self.score = 0
         self.food = None
         self._place_food()
+        self.frame_iteration = 0
         
 
     def _place_food(self):
@@ -48,35 +41,44 @@ class SnakeGame:
             self._place_food()
         
 
-    def play_step(self):
+    def play_step(self, action):
         # 1. On récupère les entrées de l'utilisateur
+        # for event in pygame.event.get():
+        #     if event.type == pygame.QUIT:
+        #         pygame.quit()
+        #         quit()
+        #     if event.type == pygame.KEYDOWN:
+        #         if event.key == pygame.K_LEFT:
+        #             self.direction = Direction.LEFT
+        #         elif event.key == pygame.K_RIGHT:
+        #             self.direction = Direction.RIGHT
+        #         elif event.key == pygame.K_UP:
+        #             self.direction = Direction.UP
+        #         elif event.key == pygame.K_DOWN:
+        #             self.direction = Direction.DOWN
+        self.frame_iteration += 1
+        # 1. On laisse jouer l'agent
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    self.direction = Direction.LEFT
-                elif event.key == pygame.K_RIGHT:
-                    self.direction = Direction.RIGHT
-                elif event.key == pygame.K_UP:
-                    self.direction = Direction.UP
-                elif event.key == pygame.K_DOWN:
-                    self.direction = Direction.DOWN
         
         # 2. On met à jour l'état du snake
-        self._move(self.direction)        # update la tête
+        self._move(action) # update de la tête
         self.snake.insert(0, self.head)
         
         # 3. On vérifie si le jeu est fini
+        reward = 0
         game_over = False
-        if self._is_collision():
+        if self.is_collision() or self.frame_iteration > 100*len(self.snake):
             game_over = True
-            return game_over, self.score
+            reward = -10
+            return reward, game_over, self.score
             
         # 4. On met une nouvelle bouffe si il l'a mangé
         if self.head == self.food:
             self.score += 1
+            reward = 10
             self._place_food()
         else:
             self.snake.pop()
@@ -86,18 +88,19 @@ class SnakeGame:
         self.clock.tick(SPEED)
 
         # 6. On retourne l'état du jeu
-        return game_over, self.score
+        return reward, game_over, self.score
     
 
-    def _is_collision(self):
+    def is_collision(self, pt=None):
+        if pt is None:
+            pt = self.head
         # si on touche un mur
-        if self.head.x > self.w - BLOCK_SIZE or self.head.x < 0 or self.head.y > self.h - BLOCK_SIZE or self.head.y < 0:
+        if pt.x > self.w - BLOCK_SIZE or pt.x < 0 or pt.y > self.h - BLOCK_SIZE or pt.y < 0:
             return True
         # si on touche la queue
-        if self.head in self.snake[1:]:
-            return True
-        
-        return False
+        print(pt, "*****", self.snake[1:])
+        input()
+        return pt in self.snake[1:]
         
 
     def _update_ui(self, record):
@@ -141,25 +144,25 @@ class SnakeGame:
 if __name__ == '__main__':
 
     try:
-        record = [record for record in open("record.txt", "r")][0]
+        record = int([record for record in open("record.txt", "r")][0])
     except:
         record = 0
-
+    game = SnakeGame()
+    agent = agentIA.Agent()
     while True:
-        game = SnakeGame()
+        state_old = agent.get_state(game)
+        final_move = agent.get_action(state_old)
+        reward, game_over, score = game.play_step(final_move)
+        state_new = agent.get_state(game)
         
-        while True:
-            game_over, score = game.play_step()
-            
-            if game_over == True:
-                break
-            
-        if score > record:
-            record = score
-            with open("record.txt", "w") as f:
-                f.write(str(record))
+        if game_over:
+            game.reset()
+            agent.n_games += 1
+        
+            if score > record:
+                record = score
+                with open("record.txt", "w") as f:
+                    f.write(str(record))
 
-        print('Final Score', score)
-        print('Record', record)
-        
-    pygame.quit()
+            print('Final Score', score)
+            print('Record', record)
