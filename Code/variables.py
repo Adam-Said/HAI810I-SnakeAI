@@ -9,7 +9,6 @@ class Direction(Enum):
     
 Point = namedtuple('Point', 'x, y')
 
-
 # UI
 TEXT_COLOR = (0, 0, 0)
 FRUIT_COLOR = (200,0,0)
@@ -21,7 +20,7 @@ SHADOW_SIZE = 4
 
 # Game
 BLOCK_SIZE = 20
-SPEED = 1
+SPEED = 100
 
 # Agent
 POSITIVE_REWARD = 10

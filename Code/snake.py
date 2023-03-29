@@ -45,18 +45,18 @@ class SnakeGame:
         
 
     def play_step(self, action):
-        # 1. collect user input
+        # 1. on regarde si on quite pas la game
         self.frame_iteration += 1
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
         
-        # 2. move
-        self._move(action) # update the head
+        # 2. déplacement de la tête
+        self._move(action)
         self.snake.insert(0, self.head)
         
-        # 3. check if game over
+        # 3. check si game over
         reward = 0
         game_over = False
         if self.is_collision() or self.frame_iteration > 100*len(self.snake):
@@ -68,7 +68,7 @@ class SnakeGame:
             return reward, game_over, self.score
         
             
-        # 4. place new food or just move
+        # 4. on place la pomme
         if self.head == self.food:
             self.score += 1
             reward = POSITIVE_REWARD
@@ -76,20 +76,20 @@ class SnakeGame:
         else:
             self.snake.pop()
         
-        # 5. update ui and clock
+        # 5. mise à jour de l'interface
         self._update_ui()
         self.clock.tick(SPEED)
-        # 6. return game over and score
+        # 6. on renvoie le score
         return reward, game_over, self.score
     
 
     def is_collision(self, point=None):
         if point is None:
             point = self.head
-        # hits boundary
+        # on touche un bord
         if point.x > self.w - BLOCK_SIZE or point.x < 0 or point.y > self.h - BLOCK_SIZE or point.y < 0:
             return True
-        # hits itself
+        # on se mord la queue
         if point in self.snake[1:]:
             return True
         
@@ -105,7 +105,7 @@ class SnakeGame:
         for pt in self.snake:
             pygame.draw.rect(self.display, SNAKE_COLOR_SHADOW, pygame.Rect(pt.x, pt.y, BLOCK_SIZE, BLOCK_SIZE))
             pygame.draw.rect(self.display, SNAKE_COLOR_BODY, pygame.Rect(pt.x+(SHADOW_SIZE/2), pt.y+(SHADOW_SIZE/2), BLOCK_SIZE - SHADOW_SIZE, BLOCK_SIZE - SHADOW_SIZE))
-            # petit yeux pour ma tête
+            # petit yeux et langue pour la tête
             if is_head:
                 is_head = False
                 EYES_SIZE = BLOCK_SIZE/5
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     game = SnakeGame()
     agent = agentClass.Agent()
 
-    #Records
+    #Record
     try:
         record = int([record for record in open("record.txt", "r")][0])
     except:
