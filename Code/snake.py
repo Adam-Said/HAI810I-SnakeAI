@@ -70,6 +70,7 @@ class SnakeGame:
             
         # 4. on place la pomme
         if self.head == self.food:
+            self.frame_iteration = 0
             self.score += 1
             reward = POSITIVE_REWARD
             self._place_food()
