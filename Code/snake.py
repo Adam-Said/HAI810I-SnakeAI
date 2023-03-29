@@ -1,38 +1,41 @@
 import pygame
 import random
+import numpy as np
+import agent as agentClass
+from display import displayScores
 from variables import *
-import agent as agentIA
 
 pygame.init()
 font = pygame.font.SysFont('arial', 25)
+
 
 class SnakeGame:
     
     def __init__(self, w=640, h=480):
         self.w = w
         self.h = h
+
         # init display
         self.display = pygame.display.set_mode((self.w, self.h))
-        pygame.display.set_caption("Snake pas AI pour l'instant")
+        pygame.display.set_caption('Snake en apprentissage renforcé')
         self.clock = pygame.time.Clock()
         self.reset()
-
-
+        
     def reset(self):
-        # reset game state
+        # init game state
         self.direction = Direction.RIGHT
-
+        
         self.head = Point(self.w/2, self.h/2)
-        self.snake = [self.head,
-                      Point(self.head.x-BLOCK_SIZE, self.head.y),
-                      Point(self.head.x-(2*BLOCK_SIZE), self.head.y)]
-
+        self.snake = [self.head, 
+                    Point(self.head.x-BLOCK_SIZE, self.head.y),
+                    Point(self.head.x-(2*BLOCK_SIZE), self.head.y)]
+        
         self.score = 0
         self.food = None
         self._place_food()
-        self.frame_iteration = 0
-        
+        self.frame_iteration = 1
 
+        
     def _place_food(self):
         x = random.randint(0, (self.w-BLOCK_SIZE )//BLOCK_SIZE )*BLOCK_SIZE 
         y = random.randint(0, (self.h-BLOCK_SIZE )//BLOCK_SIZE )*BLOCK_SIZE
@@ -42,127 +45,166 @@ class SnakeGame:
         
 
     def play_step(self, action):
-        # 1. On récupère les entrées de l'utilisateur
-        # for event in pygame.event.get():
-        #     if event.type == pygame.QUIT:
-        #         pygame.quit()
-        #         quit()
-        #     if event.type == pygame.KEYDOWN:
-        #         if event.key == pygame.K_LEFT:
-        #             self.direction = Direction.LEFT
-        #         elif event.key == pygame.K_RIGHT:
-        #             self.direction = Direction.RIGHT
-        #         elif event.key == pygame.K_UP:
-        #             self.direction = Direction.UP
-        #         elif event.key == pygame.K_DOWN:
-        #             self.direction = Direction.DOWN
+        # 1. collect user input
         self.frame_iteration += 1
-        # 1. On laisse jouer l'agent
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
         
-        # 2. On met à jour l'état du snake
-        self._move(action) # update de la tête
+        # 2. move
+        self._move(action) # update the head
         self.snake.insert(0, self.head)
         
-        # 3. On vérifie si le jeu est fini
+        # 3. check if game over
         reward = 0
         game_over = False
         if self.is_collision() or self.frame_iteration > 100*len(self.snake):
+            if self.is_collision():
+                reward = NEGATIVE_REWARD
+            else:
+                reward = NEGATIVE_REWARD
             game_over = True
-            reward = -10
             return reward, game_over, self.score
+        
             
-        # 4. On met une nouvelle bouffe si il l'a mangé
+        # 4. place new food or just move
         if self.head == self.food:
             self.score += 1
-            reward = 10
+            reward = POSITIVE_REWARD
             self._place_food()
         else:
             self.snake.pop()
         
-        # 5. On met à jour l'affichage
-        self._update_ui(record)
+        # 5. update ui and clock
+        self._update_ui()
         self.clock.tick(SPEED)
-
-        # 6. On retourne l'état du jeu
+        # 6. return game over and score
         return reward, game_over, self.score
     
 
-    def is_collision(self, pt=None):
-        if pt is None:
-            pt = self.head
-        # si on touche un mur
-        if pt.x > self.w - BLOCK_SIZE or pt.x < 0 or pt.y > self.h - BLOCK_SIZE or pt.y < 0:
+    def is_collision(self, point=None):
+        if point is None:
+            point = self.head
+        # hits boundary
+        if point.x > self.w - BLOCK_SIZE or point.x < 0 or point.y > self.h - BLOCK_SIZE or point.y < 0:
             return True
-        # si on touche la queue
-        print(pt, "*****", self.snake[1:])
-        input()
-        return pt in self.snake[1:]
+        # hits itself
+        if point in self.snake[1:]:
+            return True
+        
+        return False
         
 
-    def _update_ui(self, record):
+    def _update_ui(self):
         DEMI_BLOCK_SIZE = int(BLOCK_SIZE/2)
         
         self.display.fill(FOND_COLOR)
 
+        is_head = True
         for pt in self.snake:
             pygame.draw.rect(self.display, SNAKE_COLOR_SHADOW, pygame.Rect(pt.x, pt.y, BLOCK_SIZE, BLOCK_SIZE))
             pygame.draw.rect(self.display, SNAKE_COLOR_BODY, pygame.Rect(pt.x+(SHADOW_SIZE/2), pt.y+(SHADOW_SIZE/2), BLOCK_SIZE - SHADOW_SIZE, BLOCK_SIZE - SHADOW_SIZE))
+            # petit yeux pour ma tête
+            if is_head:
+                is_head = False
+                EYES_SIZE = BLOCK_SIZE/5
+                TONGUE_SIZE_LONG = 3*EYES_SIZE/2
+                TONGUE_SIZE_LARG = 2*EYES_SIZE/3
+                if self.direction == Direction.RIGHT:
+                    pygame.draw.rect(self.display, SNAKE_COLOR_EYES, pygame.Rect(pt.x + (2*BLOCK_SIZE/3), pt.y + (1*EYES_SIZE), EYES_SIZE, EYES_SIZE))
+                    pygame.draw.rect(self.display, SNAKE_COLOR_EYES, pygame.Rect(pt.x + (2*BLOCK_SIZE/3), pt.y + (3*EYES_SIZE), EYES_SIZE, EYES_SIZE))
+                    pygame.draw.rect(self.display, FRUIT_COLOR, pygame.Rect(pt.x + BLOCK_SIZE, pt.y + (BLOCK_SIZE/2) - 1, TONGUE_SIZE_LONG, TONGUE_SIZE_LARG))
+                elif self.direction == Direction.LEFT:
+                    pygame.draw.rect(self.display, SNAKE_COLOR_EYES, pygame.Rect(pt.x + (1*BLOCK_SIZE/3) - EYES_SIZE, pt.y + (1*EYES_SIZE), EYES_SIZE, EYES_SIZE))
+                    pygame.draw.rect(self.display, SNAKE_COLOR_EYES, pygame.Rect(pt.x + (1*BLOCK_SIZE/3) - EYES_SIZE, pt.y + (3*EYES_SIZE), EYES_SIZE, EYES_SIZE))
+                    pygame.draw.rect(self.display, FRUIT_COLOR, pygame.Rect(pt.x - TONGUE_SIZE_LONG, pt.y + (BLOCK_SIZE/2) - 1, TONGUE_SIZE_LONG, TONGUE_SIZE_LARG))
+                elif self.direction == Direction.DOWN:
+                    pygame.draw.rect(self.display, SNAKE_COLOR_EYES, pygame.Rect(pt.x + (1*EYES_SIZE), pt.y + (2*BLOCK_SIZE/3), EYES_SIZE, EYES_SIZE))
+                    pygame.draw.rect(self.display, SNAKE_COLOR_EYES, pygame.Rect(pt.x + (3*EYES_SIZE), pt.y + (2*BLOCK_SIZE/3), EYES_SIZE, EYES_SIZE))
+                    pygame.draw.rect(self.display, FRUIT_COLOR, pygame.Rect(pt.x + (BLOCK_SIZE/2) - 1, pt.y + BLOCK_SIZE, TONGUE_SIZE_LARG, TONGUE_SIZE_LONG))
+                elif self.direction == Direction.UP:
+                    pygame.draw.rect(self.display, SNAKE_COLOR_EYES, pygame.Rect(pt.x + (1*EYES_SIZE), pt.y + (1*BLOCK_SIZE/3) - EYES_SIZE, EYES_SIZE, EYES_SIZE))
+                    pygame.draw.rect(self.display, SNAKE_COLOR_EYES, pygame.Rect(pt.x + (3*EYES_SIZE), pt.y + (1*BLOCK_SIZE/3) - EYES_SIZE, EYES_SIZE, EYES_SIZE))
+                    pygame.draw.rect(self.display, FRUIT_COLOR, pygame.Rect(pt.x + (BLOCK_SIZE/2) - 1, pt.y - TONGUE_SIZE_LONG, TONGUE_SIZE_LARG, TONGUE_SIZE_LONG))
+
 
         pygame.draw.circle(self.display, FRUIT_COLOR, [self.food.x + DEMI_BLOCK_SIZE, self.food.y + DEMI_BLOCK_SIZE], DEMI_BLOCK_SIZE)
 
         textScore = font.render(f"Score : {str(self.score)}", True, TEXT_COLOR)
         self.display.blit(textScore, [0, 0])
 
-        textRecord = font.render(f"Record : {str(record)}", True, TEXT_COLOR)
-        textRecord_rect = textRecord.get_rect()
-        textRecord_pos = (self.display.get_width() - textRecord_rect.width, 0)
-        self.display.blit(textRecord, textRecord_pos)
-
         pygame.display.flip()
         
 
-    def _move(self, direction):
+    def _move(self, action):
+        # [tout droit, droite, gauche]
+        ordre_direction = [Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP]
+        index = ordre_direction.index(self.direction)
+        if np.array_equal(action, [1, 0, 0]):           # on bouge pas
+            direction = ordre_direction[index]
+        elif np.array_equal(action, [0, 1, 0]):         # on tourne à droite
+            direction = ordre_direction[(index+1)%4]
+        elif np.array_equal(action, [0, 0, 1]):         # on tourne à gauche
+            direction = ordre_direction[(index-1)%4] 
+
+        self.direction = direction
+
         x = self.head.x
         y = self.head.y
-        if direction == Direction.RIGHT:
+        if self.direction == Direction.RIGHT:
             x += BLOCK_SIZE
-        elif direction == Direction.LEFT:
+        elif self.direction == Direction.LEFT:
             x -= BLOCK_SIZE
-        elif direction == Direction.DOWN:
+        elif self.direction == Direction.DOWN:
             y += BLOCK_SIZE
-        elif direction == Direction.UP:
+        elif self.direction == Direction.UP:
             y -= BLOCK_SIZE
             
         self.head = Point(x, y)
-            
+
+
 
 
 if __name__ == '__main__':
+    #Agent
+    game = SnakeGame()
+    agent = agentClass.Agent()
 
+    #Records
     try:
         record = int([record for record in open("record.txt", "r")][0])
     except:
         record = 0
-    game = SnakeGame()
-    agent = agentIA.Agent()
+    plot_scores = []
+    plot_mean_scores = []
+    total_score = 0
+
     while True:
         state_old = agent.get_state(game)
         final_move = agent.get_action(state_old)
         reward, game_over, score = game.play_step(final_move)
-        state_new = agent.get_state(game)
+
+        # Entrainement
+        state_new = agent.get_state(game)        
+        agent.train_short_memory(state_old, final_move, reward, state_new, game_over)
+        agent.remember(state_old, final_move, reward, state_new, game_over)
         
         if game_over:
             game.reset()
-            agent.n_games += 1
+            agent.nb_games += 1
+            agent.train_long_memory()
         
             if score > record:
                 record = score
+                agent.model.save()
                 with open("record.txt", "w") as f:
                     f.write(str(record))
 
-            print('Final Score', score)
-            print('Record', record)
+            print(f"Game n°{agent.nb_games}, Score : {score}, Record : {record}")
+
+            plot_scores.append(score)
+            total_score += score
+            mean_score = total_score / agent.nb_games
+            plot_mean_scores.append(mean_score)
+            displayScores(plot_scores, plot_mean_scores)
