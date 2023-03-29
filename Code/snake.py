@@ -209,7 +209,10 @@ if __name__ == '__main__':
                 print(f"Game n°{agent.nb_games}, Score : {score}, Record : {record}")
 
             plot_scores.append(score)
-            total_score += score
-            mean_score = total_score / agent.nb_games
+            # total_score += score
+            # mean_score = total_score / agent.nb_games
+            #  Moyenne lissée / 10 game
+            lissage = 50
+            mean_score = sum(plot_scores[-lissage:]) / lissage
             plot_mean_scores.append(mean_score)
-            displayScores(plot_scores, plot_mean_scores)
+            displayScores(plot_scores, plot_mean_scores, record, glissante=lissage)
