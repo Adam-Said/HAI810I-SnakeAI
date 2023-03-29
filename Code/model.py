@@ -9,6 +9,7 @@ class Linear_QNet(nn.Module):
         super().__init__()
         self.linear_layer1 = nn.Linear(input_size, hidden_size)
         self.linear_layer2 = nn.Linear(hidden_size, output_size)
+        # self.load()
         
 
     def forward(self, x):
@@ -24,6 +25,14 @@ class Linear_QNet(nn.Module):
 
         chemin_modele = os.path.join(dossier_modele, chemin_modele)
         torch.save(self.state_dict(), chemin_modele)
+
+
+    # # fonction pour récupérer le modèle sauvegardé
+    # def load(self, chemin_modele="model.pth"):
+    #     chemin_modele = os.path.join("./model", chemin_modele)
+    #     if os.path.exists(chemin_modele):
+    #         print("Chargement du modèle sauvegardé")
+    #         self.load_state_dict(torch.load(chemin_modele))
 
 
 
