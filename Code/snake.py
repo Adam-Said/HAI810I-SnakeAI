@@ -172,10 +172,11 @@ if __name__ == '__main__':
     agent = agentClass.Agent()
 
     #Record
-    try:
-        record = int([record for record in open("record.txt", "r")][0])
-    except:
-        record = 0
+    record = 0
+    # try:
+    #     record = int([record for record in open("record.txt", "r")][0])
+    # except:
+    #     record = 0
     plot_scores = []
     plot_mean_scores = []
     total_score = 0
@@ -198,10 +199,13 @@ if __name__ == '__main__':
             if score > record:
                 record = score
                 agent.model.save()
+                print(f"Nouveau record : {record}")
                 with open("record.txt", "w") as f:
                     f.write(str(record))
 
-            print(f"Game n°{agent.nb_games}, Score : {score}, Record : {record}")
+            if agent.nb_games % 10 == 0:
+                agent.model.save()
+                print(f"Game n°{agent.nb_games}, Score : {score}, Record : {record}")
 
             plot_scores.append(score)
             total_score += score
