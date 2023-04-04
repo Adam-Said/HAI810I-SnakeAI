@@ -3,10 +3,12 @@ import numpy as np
 import torch
 from collections import deque
 from model import Linear_QNet, QTrainer
-from variables import *
+from constantes import *
+from parametres import *
 
 class Agent:
     def __init__(self):
+
         self.nb_games = 0
         self.epsilon = 0                     # seed du random
         self.gamma = GAMMA_DISCOUNT_RATE     # discount rate < 1, poids que met l'agent sur les reward passés

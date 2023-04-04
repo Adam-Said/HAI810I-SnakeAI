@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from IPython import display
-from variables import *
+from constantes import *
+import parametres
 
 plt.ion()
 plt.figure(figsize=(4, 3))
@@ -8,7 +9,7 @@ font_size = 7
 
 def displayScores(scores, moyenne, record, glissante=0):
     plt.clf()
-    plt.title(f'Entrainement : nb_neuronnes={HIDDEN_SIZE}, lr={VITESSE_APPRENTISSAGE}, epsilon={EPSILON_NB_GAMES}', fontsize=font_size)
+    plt.title(f'Entrainement : nb_neuronnes={parametres.HIDDEN_SIZE}, lr={parametres.VITESSE_APPRENTISSAGE}, epsilon={parametres.EPSILON_NB_GAMES}', fontsize=font_size)
     plt.xlabel('Nombre d\'essais', fontsize=font_size)
     plt.ylabel('Score', fontsize=font_size)
     plt.plot(scores, color="green", linewidth=1)

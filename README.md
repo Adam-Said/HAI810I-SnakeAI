@@ -16,3 +16,5 @@ This project aim to create an AI that learns to play a simple Python game by usi
 	- IPython
 
 3. Run the agent.py file to launch the project and see the AI learn to play
+
+4. To test different parameters, run the parametres.py files

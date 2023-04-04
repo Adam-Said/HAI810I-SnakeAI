@@ -3,7 +3,7 @@ import random
 import numpy as np
 import agent as agentClass
 from display import displayScores
-from variables import *
+from constantes import *
 
 pygame.init()
 font = pygame.font.SysFont('arial', 25)
@@ -177,6 +177,8 @@ def trainAgent():
     plot_mean_scores = []
     total_score = 0
 
+    print(GAMMA_DISCOUNT_RATE, " * ", VITESSE_APPRENTISSAGE, " * ", EPSILON_NB_GAMES, " * ", HIDDEN_SIZE)
+
     while agent.nb_games < 300:
         state_old = agent.get_state(game)
         final_move = agent.get_action(state_old)
@@ -197,7 +199,7 @@ def trainAgent():
                 agent.model.save()
                 # print(f"Nouveau record : {record}")
                 with open(f"entrainement/{TIME_KEY}.txt", "a") as f:
-                    f.write(f"Game:{agent.nb_games};Record:{record}")
+                    f.write(f"Game:{agent.nb_games};Record:{record}\n")
 
             if agent.nb_games % 10 == 0:
                 agent.model.save()
@@ -215,4 +217,8 @@ def trainAgent():
 
     print(f"Game n°{agent.nb_games}, Score : {score}, Record : {record}")
     with open(f"entrainement/{TIME_KEY}.txt", "a") as f:
-        f.write(f"moyenne:{mean_score};moyenne_glissante:{mean_score_glissante}")
+        f.write(f"moyenne:{mean_score};moyenne_glissante:{mean_score_glissante}\n")
+
+
+if __name__ == "__main__":
+    trainAgent()
