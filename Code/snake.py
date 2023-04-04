@@ -167,22 +167,17 @@ class SnakeGame:
 
 
 
-if __name__ == '__main__':
+def trainAgent():
     #Agent
     game = SnakeGame()
     agent = agentClass.Agent()
 
-    #Record
     record = 0
-    # try:
-    #     record = int([record for record in open("record.txt", "r")][0])
-    # except:
-    #     record = 0
     plot_scores = []
     plot_mean_scores = []
     total_score = 0
 
-    while True:
+    while agent.nb_games < 300:
         state_old = agent.get_state(game)
         final_move = agent.get_action(state_old)
         reward, game_over, score = game.play_step(final_move)
@@ -200,19 +195,24 @@ if __name__ == '__main__':
             if score > record:
                 record = score
                 agent.model.save()
-                print(f"Nouveau record : {record}")
-                with open("record.txt", "w") as f:
-                    f.write(str(record))
+                # print(f"Nouveau record : {record}")
+                with open(f"entrainement/{TIME_KEY}.txt", "a") as f:
+                    f.write(f"Game:{agent.nb_games};Record:{record}")
 
             if agent.nb_games % 10 == 0:
                 agent.model.save()
-                print(f"Game n°{agent.nb_games}, Score : {score}, Record : {record}")
+                # print(f"Game n°{agent.nb_games}, Score : {score}, Record : {record}")
 
             plot_scores.append(score)
-            # total_score += score
-            # mean_score = total_score / agent.nb_games
-            #  Moyenne lissée / 10 game
+
+            total_score += score
+            mean_score = total_score / agent.nb_games
+            
             lissage = 50
-            mean_score = sum(plot_scores[-lissage:]) / lissage
-            plot_mean_scores.append(mean_score)
+            mean_score_glissante = sum(plot_scores[-lissage:]) / min(lissage, agent.nb_games)
+            plot_mean_scores.append(mean_score_glissante)
             displayScores(plot_scores, plot_mean_scores, record, glissante=lissage)
+
+    print(f"Game n°{agent.nb_games}, Score : {score}, Record : {record}")
+    with open(f"entrainement/{TIME_KEY}.txt", "a") as f:
+        f.write(f"moyenne:{mean_score};moyenne_glissante:{mean_score_glissante}")

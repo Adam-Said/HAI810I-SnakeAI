@@ -1,7 +1,6 @@
 import random
 import numpy as np
 import torch
-from snake import Direction, Point
 from collections import deque
 from model import Linear_QNet, QTrainer
 from variables import *
@@ -9,8 +8,8 @@ from variables import *
 class Agent:
     def __init__(self):
         self.nb_games = 0
-        self.epsilon = 0     # seed du random
-        self.gamma = 0.9     # discount rate < 1, poids que met l'agent sur les reward passés
+        self.epsilon = 0                     # seed du random
+        self.gamma = GAMMA_DISCOUNT_RATE     # discount rate < 1, poids que met l'agent sur les reward passés
         self.memory = deque(maxlen=MAX_MEMORY)  # tas.  si max memoire dépassé -> popleft()
         self.model = Linear_QNet(11, HIDDEN_SIZE, 3)
         self.trainer = QTrainer(self.model, learning_rate=VITESSE_APPRENTISSAGE, gamma=self.gamma)

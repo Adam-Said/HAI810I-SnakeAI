@@ -1,6 +1,7 @@
 **/.vscode/
 Code/__.*/
 Code/model/
+Code/entrainement/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
