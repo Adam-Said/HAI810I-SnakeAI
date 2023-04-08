@@ -97,3 +97,18 @@ class Agent:
             next_move[move] = 1
 
         return next_move
+    
+
+
+
+def getParametres():
+    global TIME_KEY, GAMMA_DISCOUNT_RATE, VITESSE_APPRENTISSAGE, EPSILON_NB_GAMES, HIDDEN_SIZE
+
+    if os.path.exists("entrainement/parametres.txt"):
+        params = [line for line in open("entrainement/parametres.txt", "r")]
+
+        TIME_KEY = params[0].strip()
+        GAMMA_DISCOUNT_RATE = float(params[1].strip())
+        VITESSE_APPRENTISSAGE = float(params[2].strip())
+        EPSILON_NB_GAMES = int(params[3].strip())
+        HIDDEN_SIZE = int(params[4].strip())
