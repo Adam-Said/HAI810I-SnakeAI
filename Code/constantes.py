@@ -1,6 +1,9 @@
 from enum import Enum
 from collections import namedtuple
-import time
+import time 
+import os
+
+TIME_KEY = time.strftime("%Y-%m-%d;%H-%M-%S")
 
 class Direction(Enum):
     RIGHT = 1
@@ -34,3 +37,22 @@ VITESSE_APPRENTISSAGE = 0.001
 EPSILON_NB_GAMES = 80
 GAMMA_DISCOUNT_RATE = 0.9
 HIDDEN_SIZE = 256
+
+
+# Parametres importés
+def getParametres():
+    if not os.path.exists("entrainement"):
+        os.makedirs("entrainement")
+
+    if os.path.exists("entrainement/parametres.txt"):
+        params = [line for line in open("entrainement/parametres.txt", "r")]
+
+        TIME_KEY = params[0].strip()
+        GAMMA_DISCOUNT_RATE = float(params[1].strip())
+        VITESSE_APPRENTISSAGE = float(params[2].strip())
+        EPSILON_NB_GAMES = int(params[3].strip())
+        HIDDEN_SIZE = int(params[4].strip())
+
+getParametres()
+
+

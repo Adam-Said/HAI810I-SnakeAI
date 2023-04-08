@@ -171,15 +171,15 @@ def trainAgent():
     #Agent
     game = SnakeGame()
     agent = agentClass.Agent()
+    getParametres()
+    print(f"SNAKE gamma={GAMMA_DISCOUNT_RATE}, learning_rate={VITESSE_APPRENTISSAGE}, epsilon_nb_games={EPSILON_NB_GAMES}, hidden_size={HIDDEN_SIZE}")
 
     record = 0
     plot_scores = []
     plot_mean_scores = []
     total_score = 0
 
-    print(GAMMA_DISCOUNT_RATE, " * ", VITESSE_APPRENTISSAGE, " * ", EPSILON_NB_GAMES, " * ", HIDDEN_SIZE)
-
-    while agent.nb_games < 300:
+    while agent.nb_games < 400:
         state_old = agent.get_state(game)
         final_move = agent.get_action(state_old)
         reward, game_over, score = game.play_step(final_move)

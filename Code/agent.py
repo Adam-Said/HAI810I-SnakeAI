@@ -4,11 +4,11 @@ import torch
 from collections import deque
 from model import Linear_QNet, QTrainer
 from constantes import *
-from parametres import *
 
 class Agent:
     def __init__(self):
-
+        getParametres()
+        print(f"AGENT gamma={GAMMA_DISCOUNT_RATE}, learning_rate={VITESSE_APPRENTISSAGE}, epsilon_nb_games={EPSILON_NB_GAMES}, hidden_size={HIDDEN_SIZE}")
         self.nb_games = 0
         self.epsilon = 0                     # seed du random
         self.gamma = GAMMA_DISCOUNT_RATE     # discount rate < 1, poids que met l'agent sur les reward passés
