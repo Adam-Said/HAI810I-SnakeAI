@@ -179,7 +179,7 @@ def trainAgent():
     plot_mean_scores = []
     total_score = 0
 
-    while agent.nb_games < 10:
+    while agent.nb_games < NB_TOTAL_GAMES:
         state_old = agent.get_state(game)
         final_move = agent.get_action(state_old)
         reward, game_over, score = game.play_step(final_move)
@@ -222,7 +222,7 @@ def trainAgent():
 
 
 def getParametres():
-    global TIME_KEY, GAMMA_DISCOUNT_RATE, VITESSE_APPRENTISSAGE, EPSILON_NB_GAMES, HIDDEN_SIZE
+    global TIME_KEY, GAMMA_DISCOUNT_RATE, VITESSE_APPRENTISSAGE, EPSILON_NB_GAMES, HIDDEN_SIZE, NB_TOTAL_GAMES
 
     if os.path.exists("entrainement/parametres.txt"):
         params = [line for line in open("entrainement/parametres.txt", "r")]
@@ -232,6 +232,7 @@ def getParametres():
         VITESSE_APPRENTISSAGE = float(params[2].strip())
         EPSILON_NB_GAMES = int(params[3].strip())
         HIDDEN_SIZE = int(params[4].strip())
+        NB_TOTAL_GAMES = int(params[5].strip())
 
 
 

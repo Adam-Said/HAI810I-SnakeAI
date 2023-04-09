@@ -5,6 +5,7 @@ import os
 os.system('cls||clear')
 
 TIME_KEY = time.strftime("%Y-%m-%d;%H-%M-%S")
+NB_TOTAL_GAMES = 400
 
 if not os.path.exists("entrainement"):
     os.makedirs("entrainement")
@@ -29,7 +30,8 @@ for gamma in gamma_values:
                         f.write(f"{gamma}\n")
                         f.write(f"{learning_rate}\n")
                         f.write(f"{epsilon_nb_games}\n")
-                        f.write(f"{hidden_size}")
+                        f.write(f"{hidden_size}\n")
+                        f.write(f"{NB_TOTAL_GAMES}")
 
                     with open(f"entrainement/{TIME_KEY}.txt", "a") as f:
                         f.write(f"gamma={gamma};learning_rate={learning_rate};epsilon_nb_games={epsilon_nb_games};hidden_size={hidden_size}\n")
