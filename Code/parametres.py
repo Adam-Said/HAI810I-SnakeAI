@@ -5,7 +5,7 @@ import os
 os.system('cls||clear')
 
 TIME_KEY = time.strftime("%Y-%m-%d;%H-%M-%S")
-NB_TOTAL_GAMES = 400
+NB_TOTAL_GAMES = 500
 
 if not os.path.exists("entrainement"):
     os.makedirs("entrainement")
@@ -13,10 +13,10 @@ if not os.path.exists("entrainement"):
 with open(f"entrainement/{TIME_KEY}.txt", "w") as f:
     f.write(TIME_KEY+"\n")
                         
-gamma_values = [0.8, 0.9, 0.95]
-learning_rate_values = [0.001, 0.01]
-hidden_size_values = [256, 512, 1024]
-epsilon_nb_games_values = [80, 100, 150]
+gamma_values = [0.8]
+learning_rate_values = [0.001, 0.0001]
+hidden_size_values = [1024, 2048]
+epsilon_nb_games_values = [100]
 
 positive_reward_values = [10, 20]
 
