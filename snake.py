@@ -172,7 +172,6 @@ def trainAgent():
     game = SnakeGame()
     agent = agentClass.Agent()
     getParametres()
-    print(f"SNAKE gamma={GAMMA_DISCOUNT_RATE}, learning_rate={VITESSE_APPRENTISSAGE}, epsilon_nb_games={EPSILON_NB_GAMES}, hidden_size={HIDDEN_SIZE}")
 
     record = 0
     plot_scores = []
