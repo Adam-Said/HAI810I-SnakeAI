@@ -3,7 +3,7 @@ from collections import namedtuple
 import time 
 import os
 
-TIME_KEY = time.strftime("%Y-%m-%d;%H-%M-%S")
+TIME_KEY = time.strftime("%Y-%m-%d-%H-%M-%S")
 
 class Direction(Enum):
     RIGHT = 1
