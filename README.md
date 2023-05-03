@@ -1,6 +1,6 @@
 # HAI810I-SnakeAI
 
-This project aim to create an AI that learns to play a simple Snake game by using Reinforcment Learning with Python and Pytorch
+This project aims to create an AI that learns to play a simple Snake game by using Reinforcment Learning with Python and Pytorch
 
 ## Getting Started
 
@@ -28,7 +28,7 @@ To try this project follow this part of the guide.
 
 ## Authors
 
-- [@adams](https://github.com/Gaiko19)
+- [@adams](https://github.com/Adam-Said)
 - [@arnaudcs](https://github.com/ArnaudCs)
 - [@gatienh](https://github.com/Leogendra)
 - @morganel
